@@ -32,7 +32,7 @@
 				<value>application/json;charset=UTF-8</value>
 			</util:list>
 		</property> -->
-		<property name="features">
+		<property name="fastJsonConfig.serializerFeatures">
 			<util:list>
 				<value>WriteMapNullValue</value>
 				<value>WriteDateUseDateFormat</value>
