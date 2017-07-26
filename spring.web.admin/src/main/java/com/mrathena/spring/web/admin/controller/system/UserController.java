@@ -19,7 +19,7 @@ import com.mrathena.spring.common.tool.SessionKit;
 import com.mrathena.spring.data.entity.system.SYSResource;
 import com.mrathena.spring.data.entity.system.SYSUser;
 import com.mrathena.spring.service.system.SYSUserService;
-import com.mrathena.toolkit.data.Json;
+import com.mrathena.toolkit.Json;
 
 @Controller
 @RequestMapping("user")
