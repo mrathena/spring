@@ -22,7 +22,7 @@
 	</bean>
 
 	<bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
-		<property name="globalSessionTimeout" value="60000" /><!-- 1小时:3600000, 10分钟:600000, 1分钟:60000 -->
+		<property name="globalSessionTimeout" value="3600000" /><!-- 1小时:3600000, 10分钟:600000, 1分钟:60000 -->
 	</bean>
 
 	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
