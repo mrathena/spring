@@ -1,0 +1,7 @@
+mvn install:install-file -DgroupId=com.mrathena -DartifactId=mybatis-generator-core-adjust -Dversion=1.3.5 -Dpackaging=jar -Dfile=D:/mybatis-generator-core-1.3.5.jar
+
+<dependency>
+    <groupId>com.mrathena</groupId>
+    <artifactId>mybatis-generator-core-adjust</artifactId>
+    <version>1.3.5</version>
+</dependency>
