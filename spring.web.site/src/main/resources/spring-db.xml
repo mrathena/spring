@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<!-- 引入JDBC配置文件 -->
+	<context:property-placeholder location="classpath:jdbc.properties" />
+
+	<!-- 数据源 -->
+	<bean id="HikariCP" class="com.zaxxer.hikari.HikariDataSource" destroy-method="shutdown">
+		<property name="driverClassName" value="${HikariCP.driver.class}" />
+		<property name="jdbcUrl" value="${HikariCP.url}" />
+		<property name="username" value="${HikariCP.username}" />
+		<property name="password" value="${HikariCP.password}" />
+        <!-- 连接只读数据库时配置为true， 保证安全 -->
+        <!-- <property name="readOnly" value="false" /> -->
+        <!-- 等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException， 缺省:30秒 -->
+        <property name="connectionTimeout" value="10000" />
+        <!-- 一个连接idle状态的最大时长（毫秒），超时则被释放（retired），缺省:10分钟 -->
+        <!-- <property name="idleTimeout" value="600000" /> -->
+        <!-- 一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired），缺省:30分钟，建议设置比数据库超时时长少30秒，参考MySQL 
+            wait_timeout参数（show variables like '%timeout%';） -->
+        <!-- <property name="maxLifetime" value="1800000" /> -->
+        <!-- 连接池中允许的最大连接数。缺省值：10；推荐的公式：((core_count * 2) + effective_spindle_count) -->
+        <property name="maximumPoolSize" value="10" />
+        <property name="minimumIdle" value="1" />
+	</bean>
+
+	<!-- Spring和MyBatis完美整合，不需要Mybatis的配置映射文件 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="HikariCP" />
+		<!-- 自动扫描*Mapper.xml文件 -->
+		<property name="mapperLocations" value="classpath:mapper/*.xml"></property>
+		<property name="plugins">
+			<array>
+				<!-- 配置Mybatis分页插件PageHelper -->
+				<bean class="com.github.pagehelper.PageHelper">
+					<property name="properties">
+						<props>
+							<prop key="dialect">mysql</prop>
+							<prop key="pageSizeZero">true</prop>
+							<prop key="reasonable">true</prop>
+							<prop key="supportMethodsArguments">true</prop>
+							<prop key="returnPageInfo">none</prop>
+						</props>
+					</property>
+					<!-- 4.0.0以后版本可以不设置该参数 -->
+					<!-- <property name="dialect" value="mysql"/> -->
+					<!-- 该参数默认为false -->
+					<!-- 设置为true时，会将RowBounds第一个参数offset当成pageNum页码使用 -->
+					<!-- 和startPage中的pageNum效果一样 -->
+					<!-- <property name="offsetAsPageNum" value="false"/> -->
+					<!-- 该参数默认为false -->
+					<!-- 设置为true时，使用RowBounds分页会进行count查询 -->
+					<!-- <property name="rowBoundsWithCount" value="false"/> -->
+					<!-- 设置为true时，如果pageSize=0或者RowBounds.limit = 0就会查询出全部的结果 -->
+					<!-- （相当于没有执行分页查询，但是返回结果仍然是Page类型） -->
+					<!-- <property name="pageSizeZero" value="true"/> -->
+					<!-- 3.3.0版本可用 - 分页参数合理化，默认false禁用 -->
+					<!-- 启用合理化时，如果pageNum<1会查询第一页，如果pageNum>pages会查询最后一页 -->
+					<!-- 禁用合理化时，如果pageNum<1或pageNum>pages会返回空数据 -->
+					<!-- <property name="reasonable" value="true"/> -->
+					<!-- 3.5.0版本可用 - 为了支持startPage(Object params)方法 -->
+					<!-- 增加了一个`params`参数来配置参数映射，用于从Map或ServletRequest中取值 -->
+					<!-- 可以配置pageNum,pageSize,count,pageSizeZero,reasonable,orderBy,不配置映射的用默认值 -->
+					<!-- 不理解该含义的前提下，不要随便复制该配置 -->
+					<!-- <property name="params" value="pageNum=pageHelperStart;pageSize=pageHelperRows;"/> -->
+					<!-- 支持通过Mapper接口参数来传递分页参数 -->
+					<!-- <property name="supportMethodsArguments" value="true"/> -->
+					<!-- always总是返回PageInfo类型,check检查返回类型是否为PageInfo,none返回Page -->
+					<!-- <property name="returnPageInfo" value="none"/> -->
+				</bean>
+			</array>
+		</property>
+	</bean>
+
+	<!-- DAO接口所在包名，Spring会自动查找其下的类 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.mrathena.spring.data.dao" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+	</bean>
+
+	<!-- 事务管理 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="HikariCP"></property>
+	</bean>
+
+	<!-- 开启事务注解, 即可以在代码中使用注解 @Transaction -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+</beans>

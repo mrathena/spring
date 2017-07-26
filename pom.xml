@@ -1,0 +1,339 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.mrathena</groupId>
+	<artifactId>spring</artifactId>
+	<version>1.0.0</version>
+	<packaging>pom</packaging>
+	<name>Spring Template</name>
+	<description>Template Project For Spring</description>
+
+	<modules>
+		<module>spring.data</module>
+		<module>spring.service</module>
+		<module>spring.web.admin</module>
+		<module>spring.web.site</module>
+	</modules>
+
+	<properties>
+		<encoding>UTF-8</encoding>
+		<java.version>1.8</java.version>
+		<spring.version>4.3.9.RELEASE</spring.version>
+	</properties>
+
+	<dependencies>
+		<!-- toolkit -->
+		<dependency>
+			<groupId>com.mrathena</groupId>
+			<artifactId>toolkit</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<!-- Spring -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aspects</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-expression</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-instrument</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-instrument-tomcat</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jms</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-messaging</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-oxm</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc-portlet</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-websocket</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<!-- AOP -->
+		<!-- http://mvnrepository.com/artifact/org.aspectj/aspectjweaver -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.8.10</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/aopalliance/aopalliance -->
+		<dependency>
+			<groupId>aopalliance</groupId>
+			<artifactId>aopalliance</artifactId>
+			<version>1.0</version>
+		</dependency>
+
+		<!-- MySQL -->
+		<!-- http://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.42</version>
+		</dependency>
+		<!-- HikariCP -->
+		<!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
+		<!-- JDK1.8专用 -->
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<version>2.6.3</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP-java7 -->
+		<!-- JDK1.7专用 <dependency> <groupId>com.zaxxer</groupId> <artifactId>HikariCP-java7</artifactId> <version>2.4.12</version> </dependency> -->
+		<!-- Mybatis -->
+		<!-- http://mvnrepository.com/artifact/org.mybatis/mybatis -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<version>3.4.4</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/org.mybatis/mybatis-spring -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis-spring</artifactId>
+			<version>1.3.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.mybatis.generator/mybatis-generator-core -->
+		<!-- 不使用原版MBG, 用自己修改过的替换 <dependency> <groupId>org.mybatis.generator</groupId> <artifactId>mybatis-generator-core</artifactId> <version>1.3.5</version> </dependency> -->
+		<dependency>
+			<groupId>com.mrathena</groupId>
+			<artifactId>mybatis-generator-core-adjust</artifactId>
+			<version>1.3.5</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.shiro/shiro-core -->
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-core</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.shiro/shiro-web -->
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-web</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.shiro/shiro-ehcache -->
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-ehcache</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.shiro/shiro-spring -->
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-spring</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+
+		<!-- Jedis -->
+		<!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>2.9.0</version>
+		</dependency>
+
+		<!-- PageHelper -->
+		<!-- https://mvnrepository.com/artifact/com.github.pagehelper/pagehelper -->
+		<dependency>
+			<groupId>com.github.pagehelper</groupId>
+			<artifactId>pagehelper</artifactId>
+			<version>4.2.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.github.jsqlparser/jsqlparser -->
+		<dependency>
+			<groupId>com.github.jsqlparser</groupId>
+			<artifactId>jsqlparser</artifactId>
+			<version>1.0</version>
+		</dependency>
+
+		<!-- Json -->
+		<!-- http://mvnrepository.com/artifact/com.alibaba/fastjson -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.35</version>
+		</dependency>
+
+		<!-- Servlet -->
+		<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+		<!-- JSTL -->
+		<!-- http://mvnrepository.com/artifact/jstl/jstl -->
+		<dependency>
+			<groupId>jstl</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+		</dependency>
+
+		<!-- Log(logback) -->
+		<!-- 通用日志接口 -->
+		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.25</version>
+		</dependency>
+		<!-- 用来把Spring源代码中大量使用到的commons-logging替换成slf4j，只有在添加了这个依赖之后才能看到Spring框架本身打印的日志，否则只能看到开发者自己打印的日志 -->
+		<!-- https://mvnrepository.com/artifact/org.slf4j/jcl-over-slf4j -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>1.7.25</version>
+		</dependency>
+		<!-- 实现了slf4j的Logback -->
+		<!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
+		<!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-core -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>1.2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.2.3</version>
+		</dependency>
+		<!-- Logback官方提供的对Spring的支持 -->
+		<!-- https://mvnrepository.com/artifact/org.logback-extensions/logback-ext-spring -->
+		<dependency>
+			<groupId>org.logback-extensions</groupId>
+			<artifactId>logback-ext-spring</artifactId>
+			<version>0.1.4</version>
+		</dependency>
+
+		<!-- Swagger2 -->
+		<!-- Swagger2从2.7.0开始, 在Spring4.0.0环境下不能用 -->
+		<!-- https://mvnrepository.com/artifact/io.springfox/springfox-swagger2 -->
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>2.7.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui -->
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>2.7.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.8.9</version>
+		</dependency>
+
+
+		<!-- Junit -->
+		<!-- https://mvnrepository.com/artifact/junit/junit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.6.1</version>
+					<configuration>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
+						<encoding>${encoding}</encoding>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+</project>

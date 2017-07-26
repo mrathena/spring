@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd">
+
+	<!-- 缓存管理器 使用Ehcache实现 -->
+	<bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+		<property name="cacheManagerConfigFile" value="classpath:ehcache.xml" />
+	</bean>
+
+	<!-- 凭证匹配器 -->
+	<bean id="credentialsMatcher" class="com.mrathena.template.shiro.shiro.RetryLimitHashedCredentialsMatcher">
+		<constructor-arg ref="cacheManager" />
+		<!-- hashAlgorithmName和hashIterations可以配置到properties中 -->
+		<property name="hashAlgorithmName" value="md5" />
+		<property name="hashIterations" value="2" />
+		<property name="storedCredentialsHexEncoded" value="true" />
+	</bean>
+
+	<!-- Realm实现, 开启cache的话在登录退出改密等操作时需要操作对应cache -->
+	<bean id="SYSUserRealm" class="com.mrathena.template.shiro.shiro.SYSUserRealm">
+		<property name="credentialsMatcher" ref="credentialsMatcher" />
+		<property name="cachingEnabled" value="true" />
+		<property name="authenticationCachingEnabled" value="true" />
+		<property name="authenticationCacheName" value="authenticationCache" />
+		<property name="authorizationCachingEnabled" value="true" />
+		<property name="authorizationCacheName" value="authorizationCache" />
+	</bean>
+
+	<!-- 会话ID生成器 -->
+	<bean id="sessionIdGenerator" class="org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator" />
+
+	<!-- 会话Cookie模板, sessionIdCookie是sessionManager创建会话Cookie的模板 -->
+	<bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+		<constructor-arg value="sid" />
+		<!-- httpOnly:如果设置为true,则客户端不会暴露给客户端脚本代码,使用HttpOnly的cookie有助于减少某些类型的跨站点脚本攻击 -->
+		<property name="httpOnly" value="true" />
+		<!-- maxAge：设置Cookie的过期时间,单位是秒,默认-1,表示关闭浏览器时过期Cookie -->
+		<!-- 设置了这个,即使没有RememberMe都可以在设定时间内以authc登录,所以这里要设置成-1(浏览器重启前有效,重启浏览器需要重新登录) -->
+		<property name="maxAge" value="-1" /><!-- 30天:2592000, 7天:604800, 1天:86400. -->
+	</bean>
+
+	<!-- 会话DAO -->
+	<bean id="sessionDAO" class="org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO">
+		<!-- 设置Session缓存名字,默认就是shiro-activeSessionCache -->
+		<property name="activeSessionsCacheName" value="shiro-activeSessionCache" />
+		<property name="sessionIdGenerator" ref="sessionIdGenerator" />
+	</bean>
+
+	<!-- 会话验证调度器: 在web环境中,如果用户不主动退出是不知道会话是否过期的,因此需要定期的检测会话是否过期,Shiro提供了会话验证调度器SessionValidationScheduler来做这件事情 -->
+	<bean id="sessionValidationScheduler" class="org.apache.shiro.session.mgt.quartz.QuartzSessionValidationScheduler">
+		<!-- 设置调度时间间隔,单位毫秒,默认就是1小时(3600000) -->
+		<property name="sessionValidationInterval" value="600000" /><!-- 1小时:3600000, 10分钟:600000. -->
+		<property name="sessionManager" ref="sessionManager" />
+	</bean>
+	<!-- <bean id="sessionValidationScheduler" class="org.apache.shiro.session.mgt.ExecutorServiceSessionValidationScheduler"> -->
+	<!-- 设置调度时间间隔,单位毫秒,默认就是1小时(3600000) -->
+	<!-- <property name="interval" value="600000" /> --><!-- 1小时:3600000, 10分钟:600000. -->
+	<!-- <property name="sessionManager" ref="sessionManager" /> -->
+	<!-- </bean> -->
+
+	<!-- 会话管理器, 用于Web环境的实现,是Shiro提供的三个默认实现之一,直接废弃了Servlet容器的会话管理,自己管理会话 -->
+	<bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+		<!-- 会话的全局过期时间,单位是毫秒,默认30分钟(1800000) -->
+		<property name="globalSessionTimeout" value="3600000" /><!-- 10分钟*6 -->
+		<property name="deleteInvalidSessions" value="true" />
+		<!-- 是否开启会话验证器,默认是开启的 -->
+		<property name="sessionValidationSchedulerEnabled" value="true" />
+		<!-- 设置会话验证调度器,默认就是使用ExecutorServiceSessionValidationScheduler -->
+		<property name="sessionValidationScheduler" ref="sessionValidationScheduler" />
+		<property name="sessionDAO" ref="sessionDAO" />
+		<property name="sessionIdCookieEnabled" value="true" />
+		<!-- sessionIdCookie是sessionManager创建会话Cookie的模板 -->
+		<property name="sessionIdCookie" ref="sessionIdCookie" />
+	</bean>
+	
+	<!-- rememberMeCookie -->
+	<bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+		<constructor-arg value="rememberMe" />
+		<!-- httpOnly:如果设置为true,则客户端不会暴露给客户端脚本代码,使用HttpOnly的cookie有助于减少某些类型的跨站点脚本攻击 -->
+		<property name="httpOnly" value="true" />
+		<property name="maxAge" value="86400" /><!-- 30天:2592000, 7天:604800, 1天:86400. -->
+	</bean>
+	<!-- rememberMe管理器,cipherKey是加密rememberMe Cookie的密钥,默认AES算法 -->
+	<bean id="rememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">
+		<property name="cipherKey" value="#{T(org.apache.shiro.codec.Base64).decode('4AvVhmFLUs0KTA3Kprsdag==')}"/>
+		<property name="cookie" ref="rememberMeCookie"/>
+	</bean>
+
+	<!-- 安全管理器 -->
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="SYSUserRealm" />
+		<property name="cacheManager" ref="cacheManager" />
+		<property name="sessionManager" ref="sessionManager" />
+		<property name="rememberMeManager" ref="rememberMeManager"/>
+	</bean>
+
+	<!-- 基于Form表单的身份验证过滤器, 用Ajax登录的话应该用不到这个 -->
+	<bean id="formAuthenticationFilter" class="org.apache.shiro.web.filter.authc.FormAuthenticationFilter">
+		<!-- username,请求参数名 -->
+		<property name="usernameParam" value="username" />
+		<!-- password,请求参数名 -->
+		<property name="passwordParam" value="password" />
+		<property name="loginUrl" value="/login" />
+		<property name="successUrl" value="/index" />
+		<!-- rememberMeParam,即rememberMe请求参数名,请求参数是boolean类型,true表示rememberMe -->
+		<property name="rememberMeParam" value="rememberMe"/>
+	</bean>
+
+	<!-- Shiro的Web过滤器 -->
+	<bean id="shiro-filter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<property name="securityManager" ref="securityManager" />
+		<property name="loginUrl" value="/login" />
+		<property name="successUrl" value="/index" />
+		<property name="unauthorizedUrl" value="/unauthorize" />
+		<property name="filters">
+			<util:map>
+				<entry key="authc" value-ref="formAuthenticationFilter" />
+			</util:map>
+		</property>
+		<property name="filterChainDefinitions">
+			<value>
+				# 资源
+				/assets/**=anon
+				# 系统
+				/404.html=anon
+				/500.html=anon
+				# 登入注册登出无权限
+				/login=anon
+				/register=anon
+				/unauthorize=anon
+				/logout=logout
+				# 其他
+				/**=user
+			</value>
+		</property>
+	</bean>
+
+	<!-- Shiro生命周期处理器 -->
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor" />
+
+	<!-- 如上配置用于开启 Shiro Spring AOP 权限注解的支持,<aop:config proxy-target-class="true">表示代理类 -->
+	<aop:config proxy-target-class="true"></aop:config>
+	<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+		<property name="securityManager" ref="securityManager" />
+	</bean>
+	<!-- 
+	当验证失败，其会抛出UnauthorizedException异常，此时可以使用Spring的ExceptionHandler（DefaultExceptionHandler）来进行拦截处理
+	这是需要再写一个ProcessExceptionController么??
+	这个需要写在父Controller中
+	@ExceptionHandler({UnauthorizedException.class})
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	public ModelAndView processUnauthenticatedException(NativeWebRequest request, UnauthorizedException e) {
+		ModelAndView mv = new ModelAndView();
+		mv.addObject("exception", e);
+		mv.setViewName("unauthorized");
+		return mv;
+	}
+	 -->
+	<!-- 
+	@RequiresAuthentication:表示当前 Subject 已经通过 login 进行了身份验证；即 Subject. isAuthenticated()返回 true
+	@RequiresUser:表示当前 Subject 已经身份验证或者通过记住我登录的
+	@RequiresGuest:表示当前 Subject 没有身份验证或通过记住我登录过，即是游客身份
+	@RequiresRoles(value={"admin", "user"}, logical= Logical.AND):表示当前 Subject 需要角色 admin 和 user
+	@RequiresPermissions (value={"user:a", "user:b"}, logical= Logical.OR):表示当前 Subject 需要权限 user:a 或 user:b
+	 -->
+
+</beans>
