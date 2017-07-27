@@ -44,8 +44,21 @@
 	
 	<!-- Swagger2 http://localhost:8080/site/swagger-ui.html -->
 	<bean class="com.mrathena.spring.web.admin.config.Swagger2" />
+	
+	<!-- 静态资源 -->
+	<!-- <mvc:resources mapping="/**" location="/"></mvc:resources> -->
 
-	<mvc:resources mapping="/**" location="/" />
+	<!-- 静态资源版本管理,解决可能存在的缓存问题(MD5方式) -->
+	<bean class="com.mrathena.spring.web.admin.config.UrlProvider" />
+	<mvc:resources mapping="/**" location="/">
+		<mvc:resource-chain resource-cache="false">
+			<mvc:resolvers>
+				<mvc:version-resolver>
+					<mvc:content-version-strategy patterns="/**" />
+				</mvc:version-resolver>
+			</mvc:resolvers>
+		</mvc:resource-chain>
+	</mvc:resources>
 
 	<!-- 视图解析器 -->
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">

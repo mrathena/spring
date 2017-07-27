@@ -100,4 +100,29 @@ public class SecurityController {
 		return "redirect:login";
 	}
 
+	@RequestMapping(value = "welcome", method = RequestMethod.GET)
+	public String welcome() {
+		return "welcome.jsp";
+	}
+	@RequestMapping(value = "sys-resource", method = RequestMethod.GET)
+	public String sysResource() {
+		return "sys-resource.jsp";
+	}
+	@RequestMapping(value = "sys-role", method = RequestMethod.GET)
+	public String sysRole() {
+		return "sys-role.jsp";
+	}
+	@RequestMapping(value = "sys-role-authorize", method = RequestMethod.GET)
+	public String sysRoleAuthorize() {
+		return "sys-role-authorize.jsp";
+	}
+	@RequestMapping(value = "sys-user", method = RequestMethod.GET)
+	public String sysUser() {
+		return "sys-user.jsp";
+	}
+	@RequestMapping(value = "sys-user-authorize", method = RequestMethod.GET)
+	public String sysUserAuthorize() {
+		return "sys-user-authorize.jsp";
+	}
+
 }
