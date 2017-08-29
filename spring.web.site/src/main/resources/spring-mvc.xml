@@ -15,7 +15,7 @@
 	</mvc:annotation-driven>
 	
 	<bean id="stringHttpMessageConverter" class="org.springframework.http.converter.StringHttpMessageConverter">
-		<constructor-arg value="UTF-8" index="0"></constructor-arg>
+		<constructor-arg value="UTF-8" index="0" />
 		<property name="supportedMediaTypes">
 			<util:list>
 				<value>text/plain;charset=UTF-8</value>
@@ -26,18 +26,20 @@
 			</util:list>
 		</property>
 	</bean>
-	<bean id="jsonHttpMessageConverter" class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
-		<!-- <property name="supportedMediaTypes">
+	<!-- 使用FastJsonHttpMessageConverter4(针对SpringMVC 4.2+)而非FastJsonHttpMessageConverter -->
+	<bean id="jsonHttpMessageConverter" class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter4">
+		<property name="supportedMediaTypes">
 			<util:list>
 				<value>application/json;charset=UTF-8</value>
 			</util:list>
-		</property> -->
+		</property>
 		<property name="fastJsonConfig.serializerFeatures">
 			<util:list>
 				<value>WriteMapNullValue</value>
 				<value>WriteDateUseDateFormat</value>
 			</util:list>
 		</property>
+		<property name="fastJsonConfig.dateFormat" value="yyyy-MM-dd HH:mm:ss" />
 	</bean>
 	
 	<context:component-scan base-package="com.mrathena.spring.web.site.controller" />
