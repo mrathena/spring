@@ -1,0 +1,164 @@
+==================================================================================
+SSM框架添加图片上传功能
+----------------------------------------------------------------------------------
+假设:
+服务器url为 http://localhost:8080/
+项目文件夹为 xxxx
+在服务器上的tomcat中:
+在 .../tomcat/webapps/xxxx/ 路径下的文件可以用 http://localhost:8080/xxxx/文件名 的方式来获取
+在本地eclipse拷贝的tomcat中:
+在 eclipse工作空间路径/.metadata/.plugins/org.eclipse.wst.server.core/tmp0(或其他)/wtpwebapps/xxxx/ 路径下的文件可以用 http://localhost:8080/xxxx/文件名 的方式来获取
+----------------------------------------------------------------------------------
+1.在pom.xml中添加上传组件依赖
+<dependency>
+    <groupId>commons-fileupload</groupId>
+    <artifactId>commons-fileupload</artifactId>
+    <version>1.3.3</version>
+</dependency>
+如有必要可添加如下依赖
+<dependency>
+	<groupId>commons-io</groupId>
+	<artifactId>commons-io</artifactId>
+	<version>2.5</version>
+</dependency>
+----------------------------------------------------------------------------------
+2.在spring-mvc.xml中添加文件上传bean
+<!-- 文件上传 -->
+<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	<!-- 默认编码 -->
+	<property name="defaultEncoding" value="UTF-8" />
+	<!-- 文件大小最大值(1MB=1024KB=1048576B) -->
+	<property name="maxUploadSize" value="104857600" />
+	<!-- 内存中的最大值 -->
+	<property name="maxInMemorySize" value="102400" />
+	<!-- 启用是为了推迟文件解析，以便捕获文件大小异常 -->
+	<property name="resolveLazily" value="true" />
+</bean>
+----------------------------------------------------------------------------------
+3.添加上传UploadController
+package com.clps.keen.supplement.controller;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+
+import com.clps.keen.supplement.common.tool.Json;
+import com.clps.keen.supplement.common.tool.MD5Kit;
+import com.clps.keen.supplement.common.tool.PropertiesKit;
+
+@Controller
+@RequestMapping("upload")
+public class UploadController {
+
+	private Logger log = LoggerFactory.getLogger(getClass());
+
+	private static final String EMPTY = "";
+	private static final String POINT = ".";
+
+	@ResponseBody
+	@RequestMapping("image")
+	public Object image(String memberId, HttpServletRequest request) {
+		Json json = null;
+		if (memberId == null) {
+			json = Json.error("参数不完整");
+			return json;
+		}
+
+		try {
+			// url的前面部分, 例如: http://127.0.0.1:8080
+			String baseUrlPath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+
+			String path = PropertiesKit.get("upload.image.path") + "/" + memberId + "/";
+			String urlPath = PropertiesKit.get("upload.image.urlPath") + "/" + memberId + "/";
+			
+			// 确保文件目录存在
+			File directory = new File(path);
+			if (!directory.exists()) {
+				directory.mkdirs();
+			}
+
+			List<Map<String, String>> images = new ArrayList<>();
+
+			// 创建一个通用的多部分解析器
+			CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(request.getSession().getServletContext());
+			// 判断 request 是否有文件上传,即多部分请求
+			if (multipartResolver.isMultipart(request)) {
+				// 转换成多部分request
+				MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest) request;
+				// 获取MultiRequest中所有的文件名
+				Iterator<String> iterator = multiRequest.getFileNames();
+				while (iterator.hasNext()) {
+					// 取得上传文件, 有四种情况: 1.一个Input里面有一张图片, 2.一个Input里面有多张图片,
+					// 3.多个Iuput里面分别有一张图片, 4.多个Input里面分别有多张图片
+					List<MultipartFile> files = multiRequest.getFiles(iterator.next().toString());
+					for (MultipartFile file : files) {
+						// 在用户电脑上的文件名
+						String originalFilename = file.getOriginalFilename();
+						if (file != null && !EMPTY.equals(originalFilename)) {
+							// 获取文件后缀
+							String suffix = originalFilename.substring(originalFilename.lastIndexOf(POINT));
+							// 生成原始图片
+							String md5 = MD5Kit.getMD5(file.getBytes()).toLowerCase();
+							String name = md5 + suffix;
+							File newFile = new File(path, name);
+							if (!newFile.exists()) {
+								file.transferTo(newFile);
+							}
+							String url = baseUrlPath + urlPath + name;
+							String uri = urlPath + name;
+							Map<String, String> image = new HashMap<>();
+							image.put("url", url);
+							image.put("uri", uri);
+							image.put("name", originalFilename);
+							images.add(image);
+						}
+					}
+				}
+			}
+			json = Json.success().put("images", images);
+		} catch (Exception e) {
+			log.error(null, e);
+			json = Json.error("服务异常");
+		}
+		return json;
+	}
+}
+----------------------------------------------------------------------------------
+4.添加配置文件application.properties
+#电脑本地
+upload.image.path=/develop/_workspace/sts/.metadata/.plugins/org.eclipse.wst.server.core/tmp1/wtpwebapps/supplement/upload/image
+#服务器
+#upload.photo.path=/application/tomcat/supplement/webapps/supplement/upload/image
+upload.image.urlPath=/upload/image
+5.添加测试页面test.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<form action="upload/image" method="post" enctype="multipart/form-data">
+		<input type="text" name="memberId" value="1"/>
+		<input type="file" accept="image/jpeg,image/png" multiple/>
+		<input type="file" accept="image/jpeg,image/png" multiple/>
+		<input type="submit" value="Submit"/>
+	</form>
+</body>
+</html>
+==================================================================================
