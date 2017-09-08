@@ -71,6 +71,7 @@ public class UploadController {
 
 	@ResponseBody
 	@RequestMapping("image")
+	@CrossOrigin(origins = "*")
 	public Object image(String memberId, HttpServletRequest request) {
 		Json json = null;
 		if (memberId == null) {
