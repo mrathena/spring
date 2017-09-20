@@ -10,7 +10,7 @@
 	<context:property-placeholder location="classpath:jdbc.properties" />
 
 	<!-- 数据源 -->
-	<bean id="HikariCP" class="com.zaxxer.hikari.HikariDataSource" destroy-method="shutdown">
+	<bean id="HikariCP" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
 		<property name="driverClassName" value="${HikariCP.driver.class}" />
 		<property name="jdbcUrl" value="${HikariCP.url}" />
 		<property name="username" value="${HikariCP.username}" />
