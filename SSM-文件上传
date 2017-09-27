@@ -71,6 +71,22 @@ public class UploadController {
 
 	private static final String EMPTY = "";
 	private static final String POINT = ".";
+	
+	// 两种效率差不多, 这种更简单, 更清晰
+	@ResponseBody
+	@RequestMapping("upload")
+	@CrossOrigin(origins = "*")
+	public String upload2(MultipartFile[] files) {
+		try {
+			for (MultipartFile file : files) {
+				FileUtils.writeByteArrayToFile(new File("d:/", file.getOriginalFilename()), file.getBytes());
+			}
+			return "ok";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "error";
+		}
+	}
 
 	@ResponseBody
 	@RequestMapping("image")
