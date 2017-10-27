@@ -22,8 +22,7 @@
 			</util:list>
 		</property>
 	</bean>
-	<!-- 使用FastJsonHttpMessageConverter4(针对SpringMVC 4.2+)而非FastJsonHttpMessageConverter -->
-	<bean id="jsonHttpMessageConverter" class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter4">
+	<bean id="jsonHttpMessageConverter" class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
 		<property name="supportedMediaTypes">
 			<util:list>
 				<value>application/json;charset=UTF-8</value>
